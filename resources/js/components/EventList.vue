@@ -7,7 +7,7 @@
                     <strong>{{ event.title }}</strong> - {{ event.date }}
                 </div>
                 <div v-if="selectedEvent === event" class="event-description">
-                    {{ event.description }}
+                    {{ event.description || "/"}}
                 </div>
                 <button @click="toggleDescription(event)">
                     {{ selectedEvent === event ? 'Hide' : 'Show' }} Description
