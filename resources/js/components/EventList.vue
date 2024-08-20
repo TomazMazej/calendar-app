@@ -7,7 +7,7 @@
                     <strong>{{ event.title }}</strong> - {{ event.date }}
                 </div>
                 <div v-if="selectedEvent === event" class="event-description">
-                    {{ event.description || "/"}}
+                    {{ event.description || "/" }}
                 </div>
                 <button @click="toggleDescription(event)">
                     {{ selectedEvent === event ? 'Hide' : 'Show' }} Description
@@ -18,32 +18,47 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
 
-export default {
-    data() {
-        return {
-            events: [],
-            selectedEvent: null
-        };
-    },
-    mounted() {
-        this.fetchEvents();
-    },
-    methods: {
-        async fetchEvents() {
+interface Event {
+    id: number;
+    title: string;
+    date: string;
+    description?: string;
+}
+
+export default defineComponent({
+    setup() {
+        const events = ref<Event[]>([]);
+        const selectedEvent = ref<Event | null>(null);
+
+        const fetchEvents = async () => {
             try {
                 await axios.get('/events/refresh');
-                const response = await axios.get('/api/events');
-                this.events = response.data;
+
+                const response = await axios.get<Event[]>('/api/events');
+                events.value = response.data;
             } catch (error) {
                 console.error('Error fetching events:', error);
             }
-        },
-        toggleDescription(event) {
-            this.selectedEvent = this.selectedEvent === event ? null : event;
-        }
+        };
+
+        const toggleDescription = (event: Event) => {
+            selectedEvent.value = selectedEvent.value === event ? null : event;
+        };
+
+        onMounted(() => {
+            fetchEvents();
+        });
+
+        return {
+            events,
+            selectedEvent,
+            fetchEvents,
+            toggleDescription
+        };
     }
-};
+});
 </script>
