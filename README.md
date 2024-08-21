@@ -13,6 +13,12 @@ You can, if you wish, use any javascript framework for Vue.
 * Postgresql/Mysql
 * Vue3
 
+## How to run this project
+* Add .env file to root of the project
+* Add credentials.json into storage/app
+* Run `composer install`, `yarn install` and `yarn dev`
+* Run `php artisan serve` in another terminal
+
 ## Screenshots
 ![Image1](/1.png)
 ![Image2](/2.png)
