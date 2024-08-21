@@ -49,8 +49,16 @@ class GoogleCalendarService{
             $fetchedEventIds = [];
     
             foreach ($events->getItems() as $event) {
+                $startDateTime = $event->getStart()->getDateTime();
                 $startDate = $event->getStart()->getDate();
-                $date = (new \DateTime($startDate))->format('Y-m-d 00:00:00');
+    
+                $date = $startDateTime ?: $startDate;
+    
+                if ($startDateTime) {
+                    $date = (new \DateTime($startDateTime))->format('Y-m-d H:i:s');
+                } elseif ($startDate) {
+                    $date = (new \DateTime($startDate))->format('Y-m-d 00:00:00');
+                }
     
                 $fetchedEventIds[] = $event->id;
     
@@ -63,12 +71,10 @@ class GoogleCalendarService{
                     ]
                 );
             }
-    
             Event::whereNotIn('event_id', $fetchedEventIds)->delete();
-    
         } catch (\Exception $e) {
             \Log::error('Error fetching calendar events: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to fetch events'], 500);
         }
-    }    
+    }
 }
